@@ -143,30 +143,30 @@ hprof-conv  1.hprof   2.hprof, 然后再次打开MAT程序，打开2.hprof文件
 
 - **分析hprof文件**  
 打开MAT，选择转化好的HPROF文件，可以看到Overview的界面如下图：
-![image](E:\MarkDown\image\mat-overview.png)  
+![image](http://img.blog.csdn.net/20161011152706011)  
 MAT工具分析了heap dump后在界面上非常直观的展示了一个饼图，中间的饼状图就是根据我们上文所说的Retained heap的概念得到的内存中一些Retained Size最大的对象。点击饼状图能看到这些对象类型，但对内存泄漏的分析还远远不够。我们需要从**Dominator Tree**和**Histogram**分析。  
   
     在分析之前先介绍2个概念，**Shallowheap**和**Retained heap**。Shallow heap表示对象本身所占内存大小，一个内存大小100bytes的对象Shallow heap就是100bytes。Retained heap表示通过回收这一个对象总共能回收的内存，比方说一个100bytes的对象还直接或者间接地持有了另外3个100bytes的对象引用，回收这个对象的时候如果另外3个对象没有其他引用也能被回收掉的时候，Retained heap就是400bytes。  
 
     1.  Dominator Tree  
         Dominator Tree是显示最大存活对象的列表，可以通过过滤查看想关注的对象： 
-        ![image](E:\MarkDown\image\mat-dominatorTree-select.png)  
+        ![image](http://img.blog.csdn.net/20161011152730917)  
         
         现在想查看SecondActivity对象有可能被那些对象所引用导致内存泄漏，就是说SecondActivity应该被垃圾回收的，但是因为SecondActivity对象被其他对象强引用，导致无法回收。  
         
-        ![image](E:\MarkDown\image\mat-dominatorTree-gc.png)   
+        ![image](http://img.blog.csdn.net/20161011152804397)   
         可以看到SecondActivity被mResource对象强引用，很有可能mResource导致SecondActivity内存泄漏。  
         
-        ![image](E:\MarkDown\image\mat-dominatorTree-gc-result.png)  
+        ![image](http://img.blog.csdn.net/20161011152827653)  
     2.  Histogram  
         Histogram按类名将所有的实例对象列出来，可以点击表头进行排序,在表的第一行可以输入正则表达式来匹配结果 :  
-        ![image](E:\MarkDown\image\mat-histogram2.png)  
+        ![image](http://img.blog.csdn.net/20161011152844528)  
         
         可以看到存在一个SecondActivity对象，想知道这个对象被那个对象引用，同样的做法：  
-        ![image](E:\MarkDown\image\mat-histogram-gc.png)   
+        ![image](http://img.blog.csdn.net/20161011152901538)   
         
         可以看到SecondActivity被mResource对象强引用，很有可能mResource导致SecondActivity内存泄漏。
-        ![image](E:\MarkDown\image\mat-dominatorTree-gc-result.png)  
+        ![image](http://img.blog.csdn.net/20161011152920998)  
  
  
     
@@ -202,7 +202,7 @@ public class MyApplication extends Application {
 ```
 - **发现存在内存泄漏**  
 在调试版本中，如果发现存在内存泄漏，LeakCanary会自动显示一个通知给你。
-![image](E:\MarkDown\image\5.png)  
+![image](http://img.blog.csdn.net/20161011152940195)  
 很容易看出来，AsyncTask持有MainActivity的引用，当MainActivity退出时，GC没法回收MainActivity的内存，导致内存泄漏。  
 
 ***使用LeakCanary有注意的地方***：
